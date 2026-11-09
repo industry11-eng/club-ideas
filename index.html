@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Банк идей</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&family=Unbounded:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #EFE9FA;
+    --card: #FFFFFF;
+    --ink: #2B1B4D;
+    --muted: #6B5C8A;
+    --line: #DDD3F0;
+    --soft: #E3D8F7;
+    --purple: #5B2EA6;
+    --coral: #FF6F61;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); }
+  body {
+    font-family: "Manrope", system-ui, sans-serif;
+    color: var(--ink);
+    font-size: 14px;
+    padding: 16px 14px 48px;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  button {
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--ink);
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 8px 12px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  button:active { transform: scale(0.98); }
+  input {
+    font-family: inherit;
+    font-size: 15px;
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--card);
+    color: var(--ink);
+    outline: none;
+  }
+  input:focus { border-color: var(--purple); }
+  h1 {
+    font-family: "Unbounded", sans-serif;
+    font-weight: 600;
+    font-size: 19px;
+    margin: 0;
+  }
+  .sub { font-size: 12px; color: var(--muted); margin: 2px 0 0; }
+  .head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .label { font-size: 12px; color: var(--muted); margin: 14px 0 6px; font-weight: 500; }
+  .secs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .sec { justify-content: flex-start; text-align: left; min-height: 46px; padding: 10px 12px; font-weight: 500; }
+  .sec i { font-size: 18px; flex: none; }
+  .sec.on { background: var(--purple); border-color: var(--purple); color: #fff; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag { font-size: 12px; padding: 5px 12px; border-radius: 16px; }
+  .tag.on { background: var(--coral); border-color: var(--coral); color: #fff; }
+  .iconbtn.on { background: var(--purple); border-color: var(--purple); color: #fff; }
+  .cnt { font-size: 12px; color: var(--muted); margin: 16px 0 8px; }
+  .list { display: flex; flex-direction: column; gap: 10px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 14px; }
+  .top { display: flex; gap: 12px; align-items: flex-start; }
+  .thumb {
+    width: 52px; height: 52px; flex: none; border-radius: 12px; overflow: hidden;
+    background: var(--soft); color: var(--purple);
+    display: flex; align-items: center; justify-content: center; font-size: 24px;
+  }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .title { font-weight: 600; font-size: 15px; line-height: 1.4; margin: 0; min-width: 0; }
+  .desc { font-size: 13px; line-height: 1.6; color: #4A3B6B; margin-top: 12px; word-wrap: break-word; }
+  .desc b { color: var(--ink); font-weight: 600; }
+  .clamp { display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
+  .more { border: none; background: none; color: var(--purple); font-weight: 600; padding: 8px 0 0; }
+  .meta { font-size: 11px; color: var(--muted); margin: 12px 0 0; }
+  .actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; margin-top: 10px; }
+  .heart.on i { color: var(--coral); }
+  .center { text-align: center; color: var(--muted); margin: 40px 16px; line-height: 1.6; }
+  .box { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 24px 18px; text-align: center; margin-top: 40px; }
+  .box h2 { font-family: "Unbounded", sans-serif; font-size: 16px; margin: 0 0 10px; }
+  .box p { color: var(--muted); line-height: 1.6; margin: 0 0 16px; }
+  .primary { background: var(--purple); border-color: var(--purple); color: #fff; font-weight: 600; padding: 11px 18px; justify-content: center; }
+  #toast {
+    position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
+    background: var(--ink); color: #fff; padding: 10px 16px; border-radius: 12px;
+    font-size: 13px; opacity: 0; pointer-events: none; transition: opacity .2s; max-width: 90%;
+  }
+  #toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<div id="screen"></div>
+
+<div id="main" hidden>
+  <div class="head">
+    <div>
+      <h1>Банк идей</h1>
+      <p class="sub">Только для участников клуба</p>
+    </div>
+    <button id="favBtn" class="iconbtn" aria-label="Избранное"><i class="ti ti-bookmark" style="font-size:20px"></i></button>
+  </div>
+
+  <input id="q" type="text" placeholder="Поиск по идеям">
+
+  <p class="label">Разделы</p>
+  <div id="secs" class="secs"></div>
+
+  <p class="label">Теги</p>
+  <div id="tags" class="tags"></div>
+
+  <p id="cnt" class="cnt"></p>
+  <div id="list" class="list"></div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ===================== НАСТРОЙКИ =====================
+const CONFIG = {
+  // Сюда вставь адрес из Apps Script (начинается с https://script.google.com/macros/s/ и заканчивается на /exec)
+  API_URL: "ВСТАВЬ_СЮДА_АДРЕС_ИЗ_APPS_SCRIPT",
+  // Куда отправлять тех, кто не в клубе
+  CLUB_URL: "https://t.me/clubstrategy_bot"
+};
+// =====================================================
+
+const tg = window.Telegram && window.Telegram.WebApp;
+if (tg) {
+  tg.ready();
+  tg.expand();
+  try { tg.setHeaderColor("#EFE9FA"); tg.setBackgroundColor("#EFE9FA"); } catch (e) {}
+}
+
+const ICONS = {
+  "Быстрые рилсы": "ti-bolt",
+  "Языковые рилсы": "ti-language",
+  "Экспертные рилсы": "ti-school",
+  "Подборки ресурсов": "ti-list-details",
+  "Посты-карусели": "ti-carousel-horizontal",
+  "Сторис": "ti-circle-dashed"
+};
+
+let ideas = [], sections = [], tags = [], fav = new Set();
+let selSec = "", selTags = new Set(), favOnly = false, expanded = new Set(), copiedId = null;
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const fmt = (s) => esc(s)
+  .replace(/\*\*([\s\S]+?)\*\*/g, "<b>$1</b>")
+  .replace(/\*([^*]+?)\*/g, "<i>$1</i>")
+  .replace(/\n/g, "<br>");
+const safeUrl = (u) => (/^https?:\/\//i.test(u) ? u : "");
+const plain = (x) => (x.title + "\n\n" + x.desc).replace(/\*/g, "");
+
+function toast(text) {
+  const t = $("toast");
+  t.textContent = text;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 2200);
+}
+
+async function api(body) {
+  const payload = Object.assign({ initData: tg ? tg.initData : "" }, body);
+  const r = await fetch(CONFIG.API_URL, { method: "POST", body: JSON.stringify(payload) });
+  return r.json();
+}
+
+function show(kind) {
+  $("main").hidden = true;
+  const s = $("screen");
+  s.hidden = false;
+  if (kind === "loading") {
+    s.innerHTML = '<p class="center">Загружаю идеи…</p>';
+  } else if (kind === "denied") {
+    s.innerHTML = '<div class="box"><h2>Доступ только для участников клуба</h2>' +
+      '<p>Если ты уже в клубе, подожди минуту и открой приложение заново. Если ещё нет, оформи подписку в боте клуба.</p>' +
+      '<button class="primary" id="clubBtn">Перейти в бот клуба</button></div>';
+    $("clubBtn").onclick = () => (tg ? tg.openTelegramLink(CONFIG.CLUB_URL) : window.open(CONFIG.CLUB_URL));
+  } else if (kind === "auth") {
+    s.innerHTML = '<div class="box"><h2>Открой через Telegram</h2><p>Это приложение работает только внутри Telegram. Открой его из бота клуба.</p></div>';
+  } else {
+    s.innerHTML = '<div class="box"><h2>Не получилось загрузить</h2><p>Проверь интернет и попробуй ещё раз.</p>' +
+      '<button class="primary" id="retryBtn">Повторить</button></div>';
+    $("retryBtn").onclick = load;
+  }
+}
+
+async function load() {
+  show("loading");
+  try {
+    const r = await api({ action: "list" });
+    if (!r.ok) {
+      show(r.error === "not_member" ? "denied" : r.error === "bad_auth" ? "auth" : "error");
+      return;
+    }
+    ideas = r.ideas; sections = r.sections; tags = r.tags; fav = new Set(r.fav);
+    $("screen").hidden = true;
+    $("main").hidden = false;
+    render();
+  } catch (e) {
+    show("error");
+  }
+}
+
+function render() {
+  $("favBtn").className = "iconbtn" + (favOnly ? " on" : "");
+
+  $("secs").innerHTML = sections.map((s, i) =>
+    `<button class="sec${selSec === s ? " on" : ""}" data-s="${i}"><i class="ti ${ICONS[s] || "ti-sparkles"}"></i>${esc(s)}</button>`
+  ).join("");
+
+  $("tags").innerHTML = tags.map((t, i) =>
+    `<button class="tag${selTags.has(t) ? " on" : ""}" data-t="${i}">${esc(t)}</button>`
+  ).join("");
+
+  const q = $("q").value.trim().toLowerCase();
+  const rows = ideas.map((x, i) => [x, i]).filter(([x]) =>
+    (!selSec || x.section === selSec) &&
+    [...selTags].every((t) => x.tags.includes(t)) &&
+    (!favOnly || fav.has(x.id)) &&
+    (!q || (x.title + " " + x.desc).toLowerCase().includes(q))
+  );
+
+  $("cnt").textContent = (favOnly ? "В избранном: " : "Найдено идей: ") + rows.length;
+
+  if (!rows.length) {
+    $("list").innerHTML = '<p class="center">' + (
+      favOnly ? "Здесь появятся идеи, которые ты отметишь сердечком."
+      : ideas.length ? "Ничего не нашлось. Попробуй другой раздел или тег."
+      : "Идеи скоро появятся.") + "</p>";
+    return;
+  }
+
+  $("list").innerHTML = rows.map(([x, i]) => {
+    const long = x.desc.length > 220;
+    const open = expanded.has(x.id);
+    const img = safeUrl(x.img);
+    const link = safeUrl(x.link);
+    const thumb = img
+      ? `<img src="${esc(img)}" alt="" loading="lazy" onerror="this.parentNode.innerHTML='<i class=&quot;ti ${ICONS[x.section] || "ti-sparkles"}&quot;></i>'">`
+      : `<i class="ti ${ICONS[x.section] || "ti-sparkles"}"></i>`;
+    const isCopied = copiedId === x.id;
+    return `<div class="card">
+      <div class="top"><div class="thumb">${thumb}</div><p class="title">${fmt(x.title)}</p></div>
+      <div class="desc${long && !open ? " clamp" : ""}">${fmt(x.desc)}</div>
+      ${long ? `<button class="more" data-x="${i}">${open ? "Свернуть" : "Показать полностью"}</button>` : ""}
+      <p class="meta">${x.tags.map(esc).join(" · ")}</p>
+      <div class="actions">
+        <button data-c="${i}"><i class="ti ${isCopied ? "ti-check" : "ti-copy"}"></i>${isCopied ? "Скопировано" : "Скопировать"}</button>
+        <button class="heart${fav.has(x.id) ? " on" : ""}" data-f="${i}" aria-label="Сохранить"><i class="ti ti-heart"></i></button>
+        ${link ? `<button data-l="${i}">Открыть пример <i class="ti ti-external-link"></i></button>` : ""}
+      </div>
+    </div>`;
+  }).join("");
+}
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (e) {
+    try {
+      const a = document.createElement("textarea");
+      a.value = text;
+      a.style.position = "fixed";
+      a.style.opacity = "0";
+      document.body.appendChild(a);
+      a.select();
+      const ok = document.execCommand("copy");
+      a.remove();
+      return ok;
+    } catch (e2) {
+      return false;
+    }
+  }
+}
+
+async function toggleFav(id) {
+  const had = fav.has(id);
+  if (had) fav.delete(id); else fav.add(id);
+  render();
+  try {
+    const r = await api({ action: "fav", id: id });
+    if (!r.ok) throw new Error("fail");
+  } catch (e) {
+    if (had) fav.add(id); else fav.delete(id);
+    toast("Не удалось сохранить, попробуй ещё раз");
+    render();
+  }
+}
+
+document.addEventListener("click", async (e) => {
+  const b = e.target.closest("button");
+  if (!b) return;
+
+  if (b.id === "favBtn") { favOnly = !favOnly; render(); }
+  else if (b.dataset.s !== undefined) { const s = sections[+b.dataset.s]; selSec = selSec === s ? "" : s; render(); }
+  else if (b.dataset.t !== undefined) { const t = tags[+b.dataset.t]; selTags.has(t) ? selTags.delete(t) : selTags.add(t); render(); }
+  else if (b.dataset.x !== undefined) { const id = ideas[+b.dataset.x].id; expanded.has(id) ? expanded.delete(id) : expanded.add(id); render(); }
+  else if (b.dataset.f !== undefined) { toggleFav(ideas[+b.dataset.f].id); }
+  else if (b.dataset.l !== undefined) {
+    const u = safeUrl(ideas[+b.dataset.l].link);
+    if (u) { tg ? tg.openLink(u) : window.open(u, "_blank"); }
+  }
+  else if (b.dataset.c !== undefined) {
+    const x = ideas[+b.dataset.c];
+    const ok = await copyText(plain(x));
+    if (ok) {
+      copiedId = x.id; render();
+      setTimeout(() => { copiedId = null; render(); }, 1800);
+    } else {
+      toast("Не удалось скопировать. Выдели текст и скопируй вручную.");
+    }
+  }
+});
+
+$("q").addEventListener("input", render);
+load();
+</script>
+</body>
+</html>
